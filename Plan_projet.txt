@@ -1,0 +1,8 @@
+docker :
+
+1 conteneur base de donnée MySQL
+1 conteneur React.js contenant le frontend 
+1 conteneur Backend (en python)
+
+
+
