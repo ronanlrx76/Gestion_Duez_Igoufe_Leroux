@@ -2,6 +2,7 @@ from django.db import models
 
 # 1. Livre
 class Livre(models.Model):
+    id_livre = models.AutoField(primary_key=True)
     titre = models.CharField(max_length=50)
     auteur = models.CharField(max_length=150)
     emplacement_image_couverture = models.CharField(max_length=100, unique=True, null=True, blank=True)
@@ -13,7 +14,7 @@ class Livre(models.Model):
 
 # 2. Exemplaire
 class Exemplaire(models.Model):
-    pass
+    id_exemplaire = models.AutoField(primary_key=True)
 
     class Meta: 
         managed = False 
@@ -28,16 +29,16 @@ class Role(models.Model):
 
     class Meta: 
         managed = False 
-        db_table = 'role'
+        db_table = 'Role'
 
 
 # 4. Utilisateur
 class Utilisateur(models.Model):
-    id = models.IntegerField(primary_key=True, auto_created=True)
+    id_utilisateur = models.BigAutoField(primary_key=True, auto_created=True)
     nom = models.CharField(max_length=50)
     prenom = models.CharField(max_length=50)
     date_naissance = models.DateField()
-    role = models.ForeignKey(Role, on_delete=models.CASCADE)
+    role = models.ForeignKey(Role, on_delete=models.CASCADE, db_column='id_role')
 
     class Meta: 
         managed = False 
@@ -49,7 +50,7 @@ class Identifiant(models.Model):
     id = models.IntegerField(primary_key=True, auto_created=True)
     password_hash = models.CharField(max_length=100)
     mail = models.EmailField(max_length=60, unique=True)
-    utilisateur = models.OneToOneField(Utilisateur, on_delete=models.CASCADE)
+    utilisateur = models.OneToOneField(Utilisateur, on_delete=models.CASCADE, db_column='id_utilisateur')
 
     class Meta: 
         managed = False 
@@ -71,15 +72,23 @@ class HistoriqueEmprunt(models.Model):
 
 # 7. ExemplaireLivres
 class ExemplaireLivres(models.Model):
-    livre = models.ForeignKey(Livre, on_delete=models.CASCADE)
-    exemplaire = models.ForeignKey(Exemplaire, on_delete=models.CASCADE)
+    id_livre = models.ForeignKey(
+        'Livre', 
+        on_delete=models.CASCADE,
+        primary_key=True
+    )
+    id_exemplaire = models.ForeignKey(
+        'Exemplaire', 
+        on_delete=models.CASCADE
+    )
     statut = models.CharField(max_length=50)
     etat = models.CharField(max_length=50, null=True, blank=True)
 
     class Meta:
-        unique_together = ("livre", "exemplaire")
-        managed = False 
-        db_table = 'exemplaireLivres'
+        db_table = 'exemplaire_livres'
+        managed = False
+        unique_together = (('livre', 'exemplaire'),)
+
 
 # 8. Emprunt (PrÃªt en cours)
 class Emprunt(models.Model):

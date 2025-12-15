@@ -1,17 +1,5 @@
 services:
 
-  backend:
-    build: ./backend
-    container_name: backend
-    restart: always
-    ports:
-      - "8000:8000"
-    environment:
-      - SECRET_KEY=supersecretkey
-    depends_on:
-      - db
-
-
   db:
     image: mariadb:10.6-focal
     
@@ -24,6 +12,24 @@ services:
     
     volumes:
       - ./bdd:/var/lib/mysql
+
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p1234"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    container_name: backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=supersecretkey
+    depends_on:
+      db:
+        condition: service_healthy
     
 
   #frontend:
