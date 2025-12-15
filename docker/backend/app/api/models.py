@@ -75,11 +75,13 @@ class ExemplaireLivres(models.Model):
     id_livre = models.ForeignKey(
         'Livre', 
         on_delete=models.CASCADE,
-        primary_key=True
+        primary_key=True,
+        db_column='id_livre'
     )
     id_exemplaire = models.ForeignKey(
         'Exemplaire', 
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        db_column='id_exemplaire'
     )
     statut = models.CharField(max_length=50)
     etat = models.CharField(max_length=50, null=True, blank=True)
@@ -87,7 +89,7 @@ class ExemplaireLivres(models.Model):
     class Meta:
         db_table = 'exemplaire_livres'
         managed = False
-        unique_together = (('livre', 'exemplaire'),)
+        unique_together = (('id_livre', 'id_exemplaire'),)
 
 
 # 8. Emprunt (PrÃªt en cours)

@@ -85,9 +85,9 @@ class RechercheLivreView(APIView):
         resultats = []
         for el in livres.select_related("livre"):
             resultats.append({
-                "id_livre": el.livre.id_livre,
-                "titre": el.livre.titre,
-                "auteur": el.livre.auteur,
+                "id_livre": el.id_livre.id_livre,
+                "titre": el.id_livre.titre,
+                "auteur": el.id_livre.auteur,
                 "etat": el.etat,
                 "statut": el.statut
             })
@@ -108,8 +108,8 @@ class AjouterLivreView(APIView):
         exemplaire = Exemplaire.objects.create()
 
         ExemplaireLivres.objects.create(
-            livre=livre,
-            exemplaire=exemplaire,
+            id_livre=livre,
+            id_exemplaire=exemplaire,
             statut="disponible"
         )
 
@@ -137,14 +137,14 @@ class SupprimerLivreView(APIView):
 class ListeLivresView(APIView):
     permission_classes = [AllowAny]
     def get(self, request):
-        livres = ExemplaireLivres.objects.select_related("livre")
+        livres = ExemplaireLivres.objects.select_related("id_livre")
 
         data = []
         for el in livres:
             data.append({
-                "id_livre": el.livre.id_livre,
-                "titre": el.livre.titre,
-                "auteur": el.livre.auteur,
+                "id_livre": el.id_livre.id_livre,
+                "titre": el.id_livre.titre,
+                "auteur": el.id_livre.auteur,
                 "statut": el.statut,
                 "etat": el.etat
             })
