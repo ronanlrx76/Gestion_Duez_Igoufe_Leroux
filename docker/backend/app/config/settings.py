@@ -18,11 +18,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    # Django REST Framework
     'rest_framework',
-
-    # Your API app
     'api',
 ]
 
@@ -59,11 +55,11 @@ ROOT_URLCONF = 'config.urls'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'biblio',
+        'NAME': os.environ.get("DB_DATABASE"),
         'USER': 'root',
-        'PASSWORD': '1234',
-        'HOST': 'db',
-        'PORT': '3306',
+        'PASSWORD': os.environ.get("DB_PASSWORD"),
+        'HOST': os.environ.get('DB_CONTAINER'),
+        'PORT': os.environ.get('DB_PORT'),
     }
 }
 
@@ -75,6 +71,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
+    'EXCEPTION_HANDLER': 'api.exceptions.customExceptionHandler.CustomExceptionHandler',
 }
 
 # Static files

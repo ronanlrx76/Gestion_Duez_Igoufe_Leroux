@@ -2,17 +2,14 @@ services:
 
   db:
     image: mariadb:10.6-focal
-    
-    container_name: db
-
+    container_name: ${DB_CONTAINER}
     restart: always
-
     environment:
-      - MARIADB_ROOT_PASSWORD=1234
-    
+      - MARIADB_ROOT_PASSWORD=${DB_PASSWORD}
+      - MARIADB_DATABASE=${DB_DATABASE}
     volumes:
-      - ./bdd:/var/lib/mysql
-
+      - ./db/init/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db:/var/lib/mysql
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p1234"]
       interval: 5s
@@ -26,14 +23,11 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - SECRET_KEY=supersecretkey
+      - SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_CONTAINER=${DB_CONTAINER}
+      - DB_PORT=${DB_PORT}
     depends_on:
       db:
         condition: service_healthy
-    
-
-  #frontend:
-  #  build: ./frontend
-  #  ports:
-  #    - "8080:80"
-  #  container_name: frontend

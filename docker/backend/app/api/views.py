@@ -68,7 +68,7 @@ class LoginView(APIView):
             return Response({"error": "Mot de passe incorrect"}, status=status.HTTP_401_UNAUTHORIZED)
         
 # LIVRES
-
+"""
 class RechercheLivreView(APIView):
     permission_classes = [AllowAny]
     def get(self, request):
@@ -87,7 +87,7 @@ class RechercheLivreView(APIView):
             resultats.append({
                 "id_livre": el.id_livre.id_livre,
                 "titre": el.id_livre.titre,
-                "auteur": el.id_livre.auteur,
+                "auteur": el.id_livre.id_auteur,
                 "etat": el.etat,
                 "statut": el.statut
             })
@@ -157,3 +157,4 @@ class RootView(APIView):
     permission_classes = [AllowAny]
     def get(self, request):
         return Response({"API-bibliotheque": "Bienvenue"})
+"""
