@@ -66,17 +66,12 @@ DATABASES = {
 # Django REST
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'api.config.safeJWTAuthentication.SafeJWTAuthentication',
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
     'EXCEPTION_HANDLER': 'api.exceptions.customExceptionHandler.CustomExceptionHandler',
-}
-
-SIMPLE_JWT = {
-    'USER_ID_FIELD': 'id_utilisateur', # On indique ton champ personnalisé
-    'USER_ID_CLAIM': 'user_id',        # Comment il sera nommé dans le jeton décodé
 }
 
 # Static files

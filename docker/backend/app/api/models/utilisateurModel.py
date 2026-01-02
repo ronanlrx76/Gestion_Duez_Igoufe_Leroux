@@ -8,6 +8,10 @@ class Utilisateur(models.Model):
     date_naissance = models.DateField()
     id_role = models.ForeignKey(Role, on_delete=models.CASCADE, db_column='id_role')
 
+    @property
+    def is_authenticated(self):
+        return True
+
     class Meta:
         managed = False
         db_table = 'Utilisateur'

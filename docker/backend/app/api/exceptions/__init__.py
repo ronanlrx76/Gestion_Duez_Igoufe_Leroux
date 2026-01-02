@@ -2,3 +2,4 @@ from .emailAlreadyExistsException import EmailAlreadyExistsException
 from .allParametersAreRequiredException import AllParametersAreRequiredException
 from .customExceptionHandler import CustomExceptionHandler
 from .invalidEmailOrPasswordException import InvalidEmailOrPasswordException
+from .notFoundException import NotFoundException

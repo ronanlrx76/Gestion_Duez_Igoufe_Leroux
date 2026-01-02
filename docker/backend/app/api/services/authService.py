@@ -7,7 +7,14 @@ class AuthService:
     @staticmethod
     def generate_tokens(user):
         """Génère un Access et un Refresh token pour un utilisateur."""
-        refresh = RefreshToken.for_user(user)
+        refresh = RefreshToken()
+        
+        # On injecte l'ID de ton utilisateur directement dedans
+        refresh['user_id'] = user.id_utilisateur
+        
+        # Optionnel : tu peux même ajouter le nom pour que le Front 
+        # puisse le lire sans décoder tout le profil
+        refresh['nom'] = user.nom
         return {
             'refresh': str(refresh),
             'access': str(refresh.access_token),
