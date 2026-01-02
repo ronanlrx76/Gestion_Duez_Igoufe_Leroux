@@ -14,6 +14,7 @@ class AuteurView(APIView):
         if self.request.method == 'GET':
             return [IsAuthenticated()] # Tout utilisateur connecté
         return [IsAuthenticated(), IsAdminUserRole()] # Admin seulement pour le reste
+    
     # GET : Lister les auteurs
     def get(self, request):
         auteurs = AuthorService.get_all_auteurs()

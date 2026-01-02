@@ -2,3 +2,4 @@ from .registerInputSerializer import RegisterInputSerializer
 from .userProfilSerializer import UserProfileSerializer
 from .loginInputSerializer import LoginInputSerializer
 from .authorSerializer import AuteurSerializer
+from .livreSerializer import LivreSerializer

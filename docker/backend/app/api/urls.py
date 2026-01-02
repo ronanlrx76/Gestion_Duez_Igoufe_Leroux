@@ -6,15 +6,10 @@ urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
     path('author/', AuteurView.as_view(), name='get/post auteur'),
     path('author/<int:id>', AuteurView.as_view(), name='delete livre'),
-    path('books/', AuteurView.as_view(), name='get/post livre'),
-    path('books/<int:id>', AuteurView.as_view(), name='delete livre')
+    path('books/', LivreView.as_view(), name='get/post livre'),
+    path('books/<int:id>', LivreView.as_view(), name='delete livre')
 ]
 
 """
-    path('books/add/', AjouterLivreView.as_view(), name='ajouter_livre'),
-    path('books/<int:id_livre>/patch/', ModifierLivreView.as_view(), name='modifier_livre'),
-    path('books/<int:id_livre>/delete/', SupprimerLivreView.as_view(), name='supprimer_livre'),
-    path('books/list/', ListeLivresView.as_view(), name='lister_livre'),
-    path('books/search/', RechercheLivreView.as_view(), name='rechercher_livre'),
-    path('', RootView.as_view(), name='root')
+rajouter patch
 """
