@@ -1,14 +1,13 @@
 from django.contrib.auth.hashers import make_password, check_password
 from ..models import Utilisateur, Identifiant
 from django.db import transaction
-from ..exceptions import EmailAlreadyExistsException, InvalidEmailOrPasswordException
 
 class AuthService:
     @staticmethod
     @transaction.atomic
     def register_user(nom, prenom, email, password, date_naissance, id_role):
         if Identifiant.objects.filter(mail=email).exists():
-            raise EmailAlreadyExistsException()
+            return None
         
         # 1. Création du profil utilisateur
         user_profile = Utilisateur.objects.create(
@@ -30,5 +29,5 @@ class AuthService:
     def authenticate_user(email, password):
         identifiant = Identifiant.objects.filter(mail=email).first()
         if not identifiant or not check_password(password, identifiant.password_hash):
-            raise InvalidEmailOrPasswordException()
+           return None
         return identifiant.id_utilisateur

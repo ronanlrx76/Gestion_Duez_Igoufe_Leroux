@@ -73,3 +73,8 @@ CREATE TABLE IF NOT EXISTS Historique_emprunt (
     CONSTRAINT fk_hist_utilisateur FOREIGN KEY (id_utilisateur) REFERENCES Utilisateur(id_utilisateur),
     CONSTRAINT fk_hist_exemplaire FOREIGN KEY (id_exemplaire) REFERENCES Exemplaire_livres(id_exemplaire)
 );
+
+INSERT INTO Role VALUES (1, 'Administrateur', 10);
+INSERT INTO Role VALUES (2, 'Étudiant', 3);
+INSERT INTO Role VALUES (3, 'Professeur', 5);
+INSERT INTO Role VALUES (4, 'Visiteur', 1);
