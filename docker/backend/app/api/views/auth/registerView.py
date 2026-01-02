@@ -2,10 +2,10 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 
-from ..services.authService import AuthService
-from ..serializers import RegisterInputSerializer, UserProfileSerializer
-from ..exceptions import AllParametersAreRequiredException, EmailAlreadyExistsException
-from ..responses import Responses
+from ...services.authService import AuthService
+from ...serializers import RegisterInputSerializer, UserProfileSerializer
+from ...exceptions import AllParametersAreRequiredException, EmailAlreadyExistsException
+from ...responses import Responses
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]

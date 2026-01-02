@@ -1,8 +1,18 @@
 from django.contrib.auth.hashers import make_password, check_password
 from ..models import Utilisateur, Identifiant
 from django.db import transaction
+from rest_framework_simplejwt.tokens import RefreshToken
 
 class AuthService:
+    @staticmethod
+    def generate_tokens(user):
+        """Génère un Access et un Refresh token pour un utilisateur."""
+        refresh = RefreshToken.for_user(user)
+        return {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }
+    
     @staticmethod
     @transaction.atomic
     def register_user(nom, prenom, email, password, date_naissance, id_role):
@@ -27,7 +37,7 @@ class AuthService:
 
     @staticmethod
     def authenticate_user(email, password):
-        identifiant = Identifiant.objects.filter(mail=email).first()
+        identifiant = Identifiant.objects.select_related('id_utilisateur', 'id_utilisateur__id_role').filter(mail=email).first()
         if not identifiant or not check_password(password, identifiant.password_hash):
            return None
         return identifiant.id_utilisateur
