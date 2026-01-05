@@ -3,3 +3,5 @@ from .auth.registerView import RegisterView
 
 from .auteurs import AuteurView
 from .livres import LivreView
+from .exemplaireLivre import ExemplaireLivreView
+from .emprunt import EmpruntView

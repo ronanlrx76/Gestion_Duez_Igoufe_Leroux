@@ -24,7 +24,6 @@ class LivreView(APIView):
     def post(self, request):
         serializer = LivreSerializer(data=request.data)
         if not serializer.is_valid():
-            print(serializer.errors)
             raise AllParametersAreRequiredException("Titre et id_auteur sont requis")
         
         livre = BookService.create_livre(serializer.validated_data)
