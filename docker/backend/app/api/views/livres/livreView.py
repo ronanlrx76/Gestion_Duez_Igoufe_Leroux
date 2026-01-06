@@ -17,7 +17,10 @@ class LivreView(APIView):
 
     # GET : Liste des livres
     def get(self, request):
-        livres = BookService.get_all_livres()
+        titre_search = request.query_params.get('title')
+        
+        # Le service filtre la base de données
+        livres = BookService.get_all_livres(titre=titre_search)
 
         paginator = PageNumberPagination()
         paginator.page_size = 25

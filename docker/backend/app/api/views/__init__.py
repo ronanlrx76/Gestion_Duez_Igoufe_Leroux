@@ -1,3 +1,5 @@
+from .tokens import CustomTokenRefreshView
+
 from .auth.loginView import LoginView
 from .auth.registerView import RegisterView
 
