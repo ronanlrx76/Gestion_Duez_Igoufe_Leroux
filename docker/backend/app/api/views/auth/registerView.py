@@ -1,6 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework import status
+from drf_spectacular.utils import extend_schema
+from drf_spectacular.types import OpenApiTypes
 
 from ...services.authService import AuthService
 from ...serializers import RegisterInputSerializer, UserProfileSerializer
@@ -9,7 +11,15 @@ from ...responses import Responses
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
-
+    @extend_schema(
+        summary="Register",
+        request=RegisterInputSerializer,
+        responses={
+            200: OpenApiTypes.OBJECT,
+            400: OpenApiTypes.OBJECT, 
+            409: OpenApiTypes.OBJECT
+        }
+    )
     def post(self, request):
         serializerInput = RegisterInputSerializer(data=request.data)
         if not serializerInput.is_valid():

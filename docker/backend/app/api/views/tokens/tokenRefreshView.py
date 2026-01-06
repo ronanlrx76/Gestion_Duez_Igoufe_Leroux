@@ -1,9 +1,21 @@
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework import status
+from drf_spectacular.utils import extend_schema
+from drf_spectacular.types import OpenApiTypes
 
 from ...responses import Responses
 
 class CustomTokenRefreshView(TokenRefreshView):
+    @extend_schema(
+        summary="Rafraîchir l'Access Token",
+        description="Prend un refresh token et renvoie un nouvel access token valide." \
+        "A stocker dans localStorage, le JWT dure 15min, donc a un moment il y a 401 => " \
+        "Envoyer a cette route dans le body du POST le refresh token reçu lors du login",
+        responses={
+            200: OpenApiTypes.OBJECT, # Renvoie {"access": "...", "refresh": "..."}
+            401: OpenApiTypes.OBJECT  # Erreur si le refresh est expiré
+        }
+    )
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
 

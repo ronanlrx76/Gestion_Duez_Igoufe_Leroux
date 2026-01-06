@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'api',
+    'drf_spectacular'
 ]
 
 # MIDDLEWARE (obligatoire pour contenttypes, auth, sessions, messages)
@@ -72,6 +73,7 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ],
     'EXCEPTION_HANDLER': 'api.exceptions.customExceptionHandler.CustomExceptionHandler',
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema'
 }
 
 # Static files
@@ -79,3 +81,12 @@ STATIC_URL = "/static/"
 
 # Primary key type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'API Bibliothèque',
+    'DESCRIPTION': 'Documentation des routes de gestion d\'emprunts',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    # Optionnel : pour que Swagger gère ton JWT
+    'COMPONENT_SPLIT_PATCH': True,
+}

@@ -1,19 +1,23 @@
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from drf_spectacular.utils import extend_schema
 
 from ...exceptions import AllParametersAreRequiredException, NotFoundException
 from ...serializers import EmpruntSerializer
 from ...services import EmpruntService
 from ...responses import Responses
-from ...config import IsAdminUserRole
 
 class EmpruntView(APIView):
     def get_permissions(self):
-        if self.request.method == 'GET' or self.request.method == 'POST':
-            return [IsAuthenticated()] # Tout utilisateur connecté
-        return [IsAuthenticated(), IsAdminUserRole()] # Admin seulement pour le reste
+        return [IsAuthenticated()] # Tout utilisateur connecté
 
+    @extend_schema(
+        summary="Emprunter un livre",
+        description="Crée un emprunt pour l'utilisateur connecté via son token JWT.",
+        request=EmpruntSerializer,
+        responses={201: EmpruntSerializer}
+    )
     def post(self, request):
         # recup user_id dans token JWT
         data = request.data.copy()
@@ -29,6 +33,11 @@ class EmpruntView(APIView):
         
         return Responses.StandardResponse("success", "Livre emprunté avec succès", EmpruntSerializer(emprunt).data, status.HTTP_201_CREATED)
     
+    @extend_schema(
+        summary="Liste des emprunts personnels",
+        description="Récupère tous les emprunts actifs de l'utilisateur connecté (JWT)",
+        responses={200: EmpruntSerializer(many=True)}
+    )
     def get(self, request):
         user_id = request.user.id_utilisateur
         emprunts = EmpruntService.get_emprunts_utilisateur(user_id)
@@ -40,16 +49,6 @@ class EmpruntView(APIView):
             serializer.data, 
             status.HTTP_200_OK
         )
-    
-    def delete(self, request, id=None):
-        if not id:
-            raise AllParametersAreRequiredException("id nécessaire")
-        
-        success = EmpruntService.retourner_livre(id)
-        if success is False:
-            raise NotFoundException("Cette référence d'emprunt n'existe pas.")
-        
-        return Responses.StandardResponse("success", "Livre retourné et historique mis à jour", None, status.HTTP_200_OK)
         
 
         
