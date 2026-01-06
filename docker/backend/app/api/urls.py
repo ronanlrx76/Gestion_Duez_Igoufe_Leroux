@@ -15,6 +15,11 @@ urlpatterns = [
     path('exemplaires/<int:id>', ExemplaireLivreView.as_view(), name='patch exemplaires livre'),
 
     path('emprunts/', EmpruntView.as_view(), name='get/post emprunt'),
+    path('emprunts/<int:id>', EmpruntView.as_view(), name='delete emprunt'),
+
+    path('historique-emprunts/', HistoriqueEmpruntView.as_view(), name='get historique'),
+
+    path('admin/dashboard/', AdminDashboardView.as_view(), name='get dashboard')
 ]
 
 """

@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.pagination import PageNumberPagination
 
 from ...exceptions import AllParametersAreRequiredException, NotFoundException
 from ...responses import Responses
@@ -17,8 +18,19 @@ class LivreView(APIView):
     # GET : Liste des livres
     def get(self, request):
         livres = BookService.get_all_livres()
-        serializer = LivreSerializer(livres, many=True)
-        return Responses.StandardResponse("success", "OK", serializer.data, status.HTTP_200_OK)
+
+        paginator = PageNumberPagination()
+        paginator.page_size = 25
+        result_page = paginator.paginate_queryset(livres, request)
+
+        serializer = LivreSerializer(result_page, many=True)
+        data = {
+            "count": paginator.page.paginator.count,
+            "next": paginator.get_next_link(),
+            "previous": paginator.get_previous_link(),
+            "results": serializer.data
+        }
+        return Responses.StandardResponse("success", "OK", data, status.HTTP_200_OK)
 
     # POST : Ajouter un livre
     def post(self, request):
