@@ -15,6 +15,7 @@ class AuthService:
         # Optionnel : tu peux même ajouter le nom pour que le Front 
         # puisse le lire sans décoder tout le profil
         refresh['nom'] = user.nom
+        refresh['role'] = user.id_role.libelle_role.lower()
         return {
             'refresh': str(refresh),
             'access': str(refresh.access_token),

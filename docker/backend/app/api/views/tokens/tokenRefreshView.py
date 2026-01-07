@@ -4,6 +4,7 @@ from drf_spectacular.utils import extend_schema
 from drf_spectacular.types import OpenApiTypes
 
 from ...responses import Responses
+from ...serializers import CustomTokenRefreshSerializer
 
 class CustomTokenRefreshView(TokenRefreshView):
     @extend_schema(
@@ -17,7 +18,7 @@ class CustomTokenRefreshView(TokenRefreshView):
         }
     )
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        serializer = CustomTokenRefreshSerializer
 
         try:
             # Tente de valider le refresh token
@@ -35,6 +36,6 @@ class CustomTokenRefreshView(TokenRefreshView):
         return Responses.StandardResponse(
             "success", 
             "Token rafraîchi avec succès", 
-            serializer.validated_data, # Contient {'access': '...', 'refresh': '...'} si rotation activée
+            serializer.validated_data, 
             status.HTTP_200_OK
         )

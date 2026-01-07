@@ -7,6 +7,14 @@ class BookService:
         if titre:
             query = query.filter(titre__icontains=titre)
         return query
+    
+    @staticmethod
+    def get_livre_by_id(id_livre):
+        """Récupère un livre par son ID ou retourne None."""
+        try:
+            return Livre.objects.get(id_livre=id_livre)
+        except Livre.DoesNotExist:
+            return None
 
     @staticmethod
     def create_livre(data):

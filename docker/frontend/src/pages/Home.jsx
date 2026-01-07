@@ -60,19 +60,19 @@ export default function Home() {
         {/* Raccourcis */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
           <NavLink
-            to={"/Livres"}
+            to={"/livres"}
             className="bg-gray-700 hover:bg-gray-600 p-6 rounded-lg shadow text-white text-center font-semibold"
           >
             📚 Livres
           </NavLink>
           <NavLink
-            to={username ? "/MesEmprunts" : "/Login"}
+            to={username ? "/emprunts" : "/Login"}
             className="bg-gray-700 hover:bg-gray-600 p-6 rounded-lg shadow text-white text-center font-semibold"
           >
             📝 Mes emprunts
           </NavLink>
           <NavLink
-            to="/Informations"
+            to="/informations"
             className="bg-gray-700 hover:bg-gray-600 p-6 rounded-lg shadow text-white text-center font-semibold"
           >
             ℹ️ Informations

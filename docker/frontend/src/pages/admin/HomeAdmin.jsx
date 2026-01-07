@@ -1,20 +1,25 @@
 import { useState, useEffect } from 'react';
-import AdminStats from '../components/Admin/AdminStats';
-import QuickActionCard from '../components/Admin/QuickActionCard';
+import AdminStats from '../../components/admin/adminStats';
+import QuickActionCard from '../../components/admin/quickActionCard';
+import fetchWithAuth from '../../services/api';
 
 export default function HomeAdmin() {
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Fetch des stats sur ton nouvel endpoint documenté
-        fetch('http://localhost:8000/api/admin/dashboard/')
-            .then(res => res.json())
-            .then(res => {
+        fetchWithAuth('http://localhost:8000/api/admin/dashboard/')
+        .then(res => res.json())
+        .then(res => {
+            if (res.status === "success") {
                 setStats(res.data);
-                setLoading(false);
-            })
-            .catch(err => console.error("Erreur stats:", err));
+            }
+            setLoading(false);
+        })
+        .catch(err => {
+            console.error("Erreur stats:", err);
+            setLoading(false);
+        });
     }, []);
 
     return (

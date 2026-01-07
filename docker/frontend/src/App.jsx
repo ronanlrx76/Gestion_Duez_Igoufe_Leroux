@@ -6,6 +6,7 @@ import Book from './pages/Book';
 import Infos from './pages/Infos';
 import LivreDetail from './pages/BookDetail';
 import Header from './components/Header';
+import HomeAdmin from './pages/admin/HomeAdmin.jsx';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
             <Route path="/livres" element={<Book />} />
             <Route path="/livres/:id" element={<LivreDetail/>} />
             <Route path="/informations" element={<Infos />} />
+            <Route path="/admin/dashboard" element={<HomeAdmin />} />
           </Route>
         </Routes>
       </div>

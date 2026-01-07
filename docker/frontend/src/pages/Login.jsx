@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     
@@ -22,14 +24,13 @@ export default function Login() {
         .then((res) => {
             if (res.status === "success") {
                 // 1. Stocker les tokens (access et refresh)
-                localStorage.setItem('access_token', res.data.access);
-                localStorage.setItem('refresh_token', res.data.refresh);
+                localStorage.setItem('access_token', res.data.tokens.access);
+                localStorage.setItem('refresh_token', res.data.tokens.refresh);
                 
                 // 2. Stocker les infos de l'utilisateur (optionnel)
                 localStorage.setItem('user', JSON.stringify(res.data.user));
-
                 // 3. Rediriger (exemple)
-                window.location.href = '/'; 
+                navigate('/'); 
             } else {
                 alert("Erreur : " + res.message);
             }
