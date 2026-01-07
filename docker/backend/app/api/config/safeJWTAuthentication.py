@@ -1,7 +1,6 @@
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from api.models import Utilisateur
 
-# Vérifie l'orthographe exacte et l'absence d'espaces avant "class"
 class SafeJWTAuthentication(JWTAuthentication):
     def get_user(self, validated_token):
         user_id = validated_token.get('user_id')

@@ -11,10 +11,12 @@ REGISTER_URL = "/api/register/"
 class RegisterViewTest(TestCase):
     def setUp(self):
         self.client = APIClient()
-        mock_role = MagicMock(spec=Role)
-        mock_role.id_role = 1
-        mock_role.libelle_role = "Utilisateur"
-        mock_role.emprunt_max = 5
+
+        self.role = MagicMock(spec=Role)
+        self.role.id_role = 1
+        self.role.libelle_role = "Utilisateur"
+        self.role.emprunt_max = 5
+
         self.valid_user_data = {
             "nom": "Dupont",
             "prenom": "Jean",
@@ -23,25 +25,26 @@ class RegisterViewTest(TestCase):
             "date_naissance": "1990-01-01",
             "id_role": self.role.id_role
         }
+
         self.invalid_user_data = {
             "nom": "Dupont",
             "prenom": "Jean",
-            "email": "",  # email manquant
-            "password": "",  # mot de passe manquant
+            "email": "",
+            "password": "",
             "date_naissance": "1990-01-01",
             "id_role": self.role.id_role
         }
 
+
     @patch("api.services.authService.AuthService.register_user")
     def test_register_success(self, mock_register):
-        # Crée un vrai utilisateur dans le test, mais sans toucher la DB
-        mock_user = Utilisateur(
-            id_utilisateur=1,
-            nom=self.valid_user_data["nom"],
-            prenom=self.valid_user_data["prenom"],
-            date_naissance=self.valid_user_data["date_naissance"],
-            id_role=self.role
-        )
+        mock_user = MagicMock()
+        mock_user.id_utilisateur = 1
+        mock_user.nom = self.valid_user_data["nom"]
+        mock_user.prenom = self.valid_user_data["prenom"]
+        mock_user.date_naissance = self.valid_user_data["date_naissance"]
+        mock_user.id_role = self.role
+
         mock_register.return_value = mock_user
 
         response = self.client.post(REGISTER_URL, self.valid_user_data, format="json")
@@ -50,6 +53,7 @@ class RegisterViewTest(TestCase):
         self.assertEqual(response.data["status"], "success")
         self.assertEqual(response.data["message"], "Utilisateur créé")
         self.assertEqual(response.data["data"]["nom"], self.valid_user_data["nom"])
+
 
     @patch("api.services.authService.AuthService.register_user")
     def test_register_email_exists(self, mock_register):
