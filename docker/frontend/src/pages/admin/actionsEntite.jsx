@@ -11,6 +11,31 @@ export default function AdminActions() {
   const [editingItem, setEditingItem] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
+  const handleTerminerEmprunt = async (exemplaireId) => {
+  if (!window.confirm("Confirmer le retour du livre ? Cela libérera l'exemplaire.")) return;
+
+  try {
+    // 1. On supprime l'emprunt (DELETE)
+    // Note : Comme c'est un OneToOne avec primary_key=True sur id_exemplaire, 
+    // l'ID de l'emprunt est le même que celui de l'exemplaire.
+    const resDelete = await fetchWithAuth(`http://localhost:8000/api/emprunts/${exemplaireId}/`, {
+      method: 'DELETE'
+    });
+
+    if (resDelete.ok) {
+      alert("Livre rendu avec succès !");
+      
+      // 3. Rafraîchir les données
+      fetchExemplaires(selectedLivreId);
+      setEditingItem(null); // On ferme le volet
+    } else {
+      alert("Erreur lors du retour du livre.");
+    }
+  } catch (err) {
+    console.error("Erreur retour livre:", err);
+  }
+};
+
   // --- FETCH DES DONNÉES ---
   const fetchData = useCallback(async () => {
     try {
@@ -180,128 +205,105 @@ const handleDelete = async (type, id) => {
         </div>
 
         {/* COLONNE DROITE (DÉTAILS & ACTIONS) */}
-<div className="bg-gray-800 rounded-xl p-6 border border-gray-700 sticky top-10 h-fit min-h-[400px]">
-  {editingItem ? (
-    <div className="space-y-6">
-      <div className="border-b border-gray-700 pb-4 flex justify-between items-center">
-        <div>
-          <h2 className="text-xl font-bold text-blue-400 capitalize">{activeTab}</h2>
-          <p className="text-xs text-gray-500 italic">ID: #{editingItem.id_auteur || editingItem.id_livre || editingItem.id_exemplaire}</p>
+        <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 sticky top-10 h-fit min-h-[400px]">
+          {editingItem ? (
+          <div className="space-y-6">
+            {/* Header commun */}
+            <div className="border-b border-gray-700 pb-4 flex justify-between items-center">
+              <div>
+                <h2 className="text-xl font-bold text-blue-400 capitalize">{activeTab}</h2>
+                <p className="text-xs text-gray-500 italic">ID: #{editingItem.id_auteur || editingItem.id_livre || editingItem.id_exemplaire}</p>
+              </div>
+              <button onClick={() => {setIsEditing(false); setEditingItem(null);}} className="text-gray-400 hover:text-white">✕</button>
+            </div>
+
+            {!isEditing ? (
+              /* --- 1. MODE VUE (DÉTAILS) --- */
+              <div className="space-y-4 animate-in slide-in-from-right-5 duration-300">
+                <div className="space-y-3">
+                  {activeTab === 'auteur' && <p><span className="text-gray-500 text-xs block">Nom complet</span> {editingItem.nom} {editingItem.prenom}</p>}
+                  {activeTab === 'livre' && <p><span className="text-gray-500 text-xs block">Titre</span> {editingItem.titre}</p>}
+                  
+                  {activeTab === 'exemplaire' && (
+                    <>
+                      <p><span className="text-gray-500 text-xs block">Statut</span> 
+                        <span className={`px-2 py-0.5 rounded text-xs ${editingItem.statut === 'disponible' ? 'bg-green-900 text-green-200' : 'bg-red-900 text-red-200'}`}>{editingItem.statut}</span>
+                      </p>
+                      <p><span className="text-gray-500 text-xs block">État</span> {editingItem.etat}</p>
+                      
+                      {/* --- C'EST ICI QU'IL MANQUAIT LE BLOC --- */}
+                      {editingItem.info_emprunt && (
+                        <div className="mt-4 p-4 bg-blue-900/40 border border-blue-500/50 rounded-lg animate-in zoom-in duration-300">
+                          <h3 className="text-blue-400 text-xs font-bold uppercase mb-2">👤 Emprunteur Actuel</h3>
+                          <p className="text-sm text-white font-medium">{editingItem.info_emprunt.nom_utilisateur}</p>
+                          <p className="text-xs text-gray-400">Retour prévu : {new Date(editingItem.info_emprunt.retour_prevu).toLocaleDateString()}</p>
+                          <button 
+                            onClick={() => handleTerminerEmprunt(editingItem.id_exemplaire)}
+                            className="w-full mt-3 bg-blue-600 hover:bg-blue-500 text-white text-xs py-1.5 rounded font-bold transition-all"
+                          >
+                            Marquer comme rendu
+                          </button>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-2 pt-4">
+                  <button onClick={() => setIsEditing(true)} className="w-full bg-blue-600 hover:bg-blue-500 py-2 rounded font-bold transition">✏️ Modifier</button>
+                  <button onClick={() => handleDelete(activeTab, editingItem.id_auteur || editingItem.id_livre || editingItem.id_exemplaire)} className="w-full border border-red-500/50 text-red-500 hover:bg-red-500/10 py-2 rounded font-bold transition">🗑️ Supprimer</button>
+                </div>
+              </div>
+            ) : (
+              /* --- 2. MODE ÉDITION (FORMULAIRE) --- */
+              <form onSubmit={handleUpdate} className="space-y-4 animate-in fade-in duration-300">
+                {activeTab === 'auteur' && (
+                  <>
+                    <input type="text" value={editingItem.nom} onChange={(e) => setEditingItem({...editingItem, nom: e.target.value})} className="w-full bg-gray-900 border border-gray-700 p-2 rounded" placeholder="Nom" />
+                    <input type="text" value={editingItem.prenom} onChange={(e) => setEditingItem({...editingItem, prenom: e.target.value})} className="w-full bg-gray-900 border border-gray-700 p-2 rounded" placeholder="Prénom" />
+                  </>
+                )}
+
+                {activeTab === 'livre' && (
+                  <>
+                    <input type="text" value={editingItem.titre} onChange={(e) => setEditingItem({...editingItem, titre: e.target.value})} className="w-full bg-gray-900 border border-gray-700 p-2 rounded" placeholder="Titre" />
+                  </>
+                )}
+
+                {activeTab === 'exemplaire' && (
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-xs text-gray-400 block mb-1">Statut</label>
+                      <select value={editingItem.statut} onChange={(e) => setEditingItem({...editingItem, statut: e.target.value})} className="w-full bg-gray-900 border border-gray-700 p-2 rounded">
+                        <option value="disponible">Disponible</option>
+                        <option value="emprunté">Emprunté</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-400 block mb-1">État</label>
+                      <select value={editingItem.etat} onChange={(e) => setEditingItem({...editingItem, etat: e.target.value})} className="w-full bg-gray-900 border border-gray-700 p-2 rounded">
+                        <option value="Neuf">Neuf</option>
+                        <option value="Bon état">Bon état</option>
+                        <option value="Usé">Usé</option>
+                        <option value="Abîmé">Abîmé</option>
+                      </select>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex gap-2 pt-2">
+                  <button type="submit" className="flex-1 bg-green-600 hover:bg-green-500 py-2 rounded font-bold">Enregistrer</button>
+                  <button type="button" onClick={() => setIsEditing(false)} className="flex-1 bg-gray-700 hover:bg-gray-600 py-2 rounded">Annuler</button>
+                </div>
+              </form>
+            )}
+          </div>
+        ) : (
+          <div className="h-full flex items-center justify-center text-gray-500 italic text-center py-20">
+            Sélectionnez un élément à gauche pour voir les détails.
+          </div>
+        )}
         </div>
-        <button onClick={() => {setIsEditing(false); setEditingItem(null);}} className="text-gray-400 hover:text-white">✕</button>
-      </div>
-
-      {!isEditing ? (
-        /* --- MODE VUE (DÉTAILS) --- */
-        <div className="space-y-4 animate-in slide-in-from-right-5 duration-300">
-          <div className="space-y-3">
-            {activeTab === 'auteur' && (
-              <>
-                <p><span className="text-gray-500 text-xs block">Nom complet</span> {editingItem.nom} {editingItem.prenom}</p>
-              </>
-            )}
-            {activeTab === 'livre' && (
-              <>
-                <p><span className="text-gray-500 text-xs block">Titre</span> {editingItem.titre}</p>
-                <p><span className="text-gray-500 text-xs block">ID Auteur</span> {editingItem.id_auteur}</p>
-              </>
-            )}
-            {activeTab === 'exemplaire' && (
-              <>
-                <p><span className="text-gray-500 text-xs block">Statut</span> 
-                  <span className={`px-2 py-0.5 rounded text-xs ${editingItem.statut === 'Disponible' ? 'bg-green-900 text-green-200' : 'bg-red-900 text-red-200'}`}>{editingItem.statut}</span>
-                </p>
-                <p><span className="text-gray-500 text-xs block">État</span> {editingItem.etat}</p>
-              </>
-            )}
-          </div>
-
-          <div className="flex flex-col gap-2 pt-4">
-            <button onClick={() => setIsEditing(true)} className="w-full bg-blue-600 hover:bg-blue-500 py-2 rounded font-bold transition">✏️ Modifier</button>
-            <button 
-              onClick={() => handleDelete(activeTab, editingItem.id_auteur || editingItem.id_livre || editingItem.id_exemplaire)}
-              className="w-full border border-red-500/50 text-red-500 hover:bg-red-500/10 py-2 rounded font-bold transition"
-            >
-              🗑️ Supprimer
-            </button>
-          </div>
-        </div>
-      ) : (
-        /* --- MODE ÉDITION (FORMULAIRE) --- */
-        <form onSubmit={handleUpdate} className="space-y-4 animate-in fade-in duration-300">
-          {activeTab === 'auteur' && (
-            <>
-              <div>
-                <label className="text-xs text-gray-400 mb-1 block">Nom</label>
-                <input type="text" value={editingItem.nom} 
-                  onChange={(e) => setEditingItem({...editingItem, nom: e.target.value})}
-                  className="w-full bg-gray-900 border border-gray-700 p-2 rounded focus:border-blue-500 outline-none" />
-              </div>
-              <div>
-                <label className="text-xs text-gray-400 mb-1 block">Prénom</label>
-                <input type="text" value={editingItem.prenom} 
-                  onChange={(e) => setEditingItem({...editingItem, prenom: e.target.value})}
-                  className="w-full bg-gray-900 border border-gray-700 p-2 rounded focus:border-blue-500 outline-none" />
-              </div>
-            </>
-          )}
-
-          {activeTab === 'livre' && (
-            <>
-              <div>
-                <label className="text-xs text-gray-400 mb-1 block">Titre du livre</label>
-                <input type="text" value={editingItem.titre} 
-                  onChange={(e) => setEditingItem({...editingItem, titre: e.target.value})}
-                  className="w-full bg-gray-900 border border-gray-700 p-2 rounded focus:border-blue-500 outline-none" />
-              </div>
-              <div>
-                <label className="text-xs text-gray-400 mb-1 block">URL Image Couverture</label>
-                <input type="text" value={editingItem.emplacement_image_couverture} 
-                  onChange={(e) => setEditingItem({...editingItem, emplacement_image_couverture: e.target.value})}
-                  className="w-full bg-gray-900 border border-gray-700 p-2 rounded focus:border-blue-500 outline-none" />
-              </div>
-            </>
-          )}
-
-          {activeTab === 'exemplaire' && (
-            <>
-              <div>
-                <label className="text-xs text-gray-400 mb-1 block">Statut</label>
-                <select value={editingItem.statut} 
-                  onChange={(e) => setEditingItem({...editingItem, statut: e.target.value})}
-                  className="w-full bg-gray-900 border border-gray-700 p-2 rounded outline-none">
-                  <option value="Disponible">Disponible</option>
-                  <option value="Maintenance">Maintenance</option>
-                  <option value="Perdu">Perdu</option>
-                </select>
-              </div>
-              <div>
-                <label className="text-xs text-gray-400 mb-1 block">État</label>
-                <select value={editingItem.etat} 
-                  onChange={(e) => setEditingItem({...editingItem, etat: e.target.value})}
-                  className="w-full bg-gray-900 border border-gray-700 p-2 rounded outline-none">
-                  <option value="Neuf">Neuf</option>
-                  <option value="Bon état">Bon état</option>
-                  <option value="Usé">Usé</option>
-                  <option value="Abîmé">Abîmé</option>
-                </select>
-              </div>
-            </>
-          )}
-
-          <div className="flex gap-2 pt-2">
-            <button type="submit" className="flex-1 bg-green-600 hover:bg-green-500 py-2 rounded font-bold">Enregistrer</button>
-            <button type="button" onClick={() => setIsEditing(false)} className="flex-1 bg-gray-700 hover:bg-gray-600 py-2 rounded">Annuler</button>
-          </div>
-        </form>
-      )}
-    </div>
-  ) : (
-    <div className="h-full flex items-center justify-center text-gray-500 italic text-center py-20">
-      Sélectionnez un élément à gauche pour voir les détails ou modifier.
-    </div>
-  )}
-</div>
       </div>
     </div>
   );

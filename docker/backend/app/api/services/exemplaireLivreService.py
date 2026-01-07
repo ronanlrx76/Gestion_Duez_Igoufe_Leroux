@@ -9,12 +9,9 @@ class ExemplaireLivreService:
     @staticmethod
     def get_exemplaires_by_book(id_livre):
         # Récupère tous les exemplaires pour un livre donné
-        return ExemplaireLivres.objects.filter(id_livre=id_livre)
-
-    @staticmethod
-    def get_count_by_book(id_livre):
-        # Retourne le nombre total d'exemplaires pour ce livre
-        return ExemplaireLivres.objects.filter(id_livre=id_livre).count()
+        return ExemplaireLivres.objects.filter(id_livre=id_livre).prefetch_related(
+            'emprunts' # Nom du related_name sur la FK id_exemplaire dans le modèle Emprunt
+        )
 
     @staticmethod
     def update_exemplaire(id_exemplaire, data):

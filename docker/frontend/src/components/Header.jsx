@@ -7,7 +7,8 @@ const navigation = [
   { name: 'ACCUEIL', href: '/' },
   { name: 'LIVRES', href: '/livres' },
   { name: 'INFORMATIONS', href: '/informations' },
-  {name: 'EMPRUNTS', href: '/mes-emprunts' }
+  {name: 'EMPRUNTS', href: '/mes-emprunts' },
+  { name: 'HISTORIQUE', href: '/historique-emprunts' },
 ];
 
 export default function Navbar() {

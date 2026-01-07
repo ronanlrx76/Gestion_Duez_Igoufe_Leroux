@@ -1,7 +1,6 @@
 const fetchWithAuth = async (url, options = {}) => {
     let token = localStorage.getItem('access_token');
     
-    // Configuration de base
     const headers = {
         'Content-Type': 'application/json',
         ...options.headers,
@@ -13,12 +12,18 @@ const fetchWithAuth = async (url, options = {}) => {
 
     let response = await fetch(url, { ...options, headers });
 
-    // SI ERREUR 401 : Le token a probablement expiré
+    // Si 401, on tente le refresh
     if (response.status === 401) {
+        console.warn("Access token expiré ou invalide, tentative de refresh...");
         const refreshToken = localStorage.getItem('refresh_token');
 
-        if (refreshToken) {
-            // 1. Tenter de rafraîchir le token
+        if (!refreshToken) {
+            console.error("Pas de refresh token disponible.");
+            handleLogout();
+            return response;
+        }
+
+        try {
             const refreshRes = await fetch('http://localhost:8000/api/token/refresh/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -27,22 +32,39 @@ const fetchWithAuth = async (url, options = {}) => {
 
             if (refreshRes.ok) {
                 const data = await refreshRes.json();
-                // 2. Sauvegarder le nouvel access token
-                localStorage.setItem('access_token', data.access);
-
-                // 3. Relancer la requête initiale avec le nouveau token
-                headers['Authorization'] = `Bearer ${data.access}`;
-                return fetch(url, { ...options, headers });
+                
+                // VÉRIFICATION CRITIQUE : quel est le nom de la clé ?
+                const newAccess = data.access || data.token; 
+                
+                if (newAccess) {
+                    console.log("Nouveau token obtenu avec succès !");
+                    localStorage.setItem('access_token', newAccess);
+                    headers['Authorization'] = `Bearer ${newAccess}`;
+                    
+                    // On rejoue la requête initiale
+                    return fetch(url, { ...options, headers });
+                }
+            } else {
+                console.error("Le refresh token a expiré lui aussi.");
+                handleLogout();
             }
+        } catch (err) {
+            console.error("Erreur réseau pendant le refresh:", err);
+            // On ne déconnecte pas forcément ici, c'est peut-être juste une coupure réseau
         }
-
-        // Si le refresh a échoué ou s'il n'y a pas de refresh token
-        localStorage.clear();
-        window.location.href = '/Login';
-        return Promise.reject("Session expirée");
     }
 
     return response;
+};
+
+// Fonction isolée pour éviter de répéter le code de redirection
+const handleLogout = () => {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    // On évite le .clear() qui peut supprimer des préférences utilisateur utiles
+    if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+    }
 };
 
 export default fetchWithAuth;

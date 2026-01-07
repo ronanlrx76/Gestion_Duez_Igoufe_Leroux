@@ -44,7 +44,7 @@ class ExemplaireLivreView(APIView):
             raise AllParametersAreRequiredException("Le paramètre (id_livre) est requis")
         
         exemplaires = ExemplaireLivreService.get_exemplaires_by_book(id_livre)
-        total = ExemplaireLivreService.get_count_by_book(id_livre)
+        total = exemplaires.count()
         
         serializer = ExemplaireLivreSerializer(exemplaires, many=True)
         
