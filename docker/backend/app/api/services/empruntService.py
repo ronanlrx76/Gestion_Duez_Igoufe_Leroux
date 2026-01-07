@@ -1,6 +1,8 @@
 from django.db import transaction
+
 from ..models import Emprunt
-from .exemplaireLivreService import ExemplaireLivreService # On importe l'autre service
+from .exemplaireLivreService import ExemplaireLivreService
+from .historiqueEmpruntService import HistoriqueEmpruntService
 
 class EmpruntService:
     @staticmethod
@@ -23,3 +25,23 @@ class EmpruntService:
     @staticmethod
     def get_emprunts_utilisateur(id_utilisateur):
         return Emprunt.objects.filter(id_utilisateur=id_utilisateur)
+    
+    @staticmethod
+    @transaction.atomic
+    def retourner_livre(id_exemplaire):
+        try:
+            # 1. Récupérer l'emprunt actuel
+            emprunt = Emprunt.objects.get(id_exemplaire=id_exemplaire)
+            
+            # 2. Créer l'entrée dans l'historique
+            HistoriqueEmpruntService.archiver_emprunt(emprunt)
+            
+            # 3. Mettre à jour le statut de l'exemplaire via ton service
+            ExemplaireLivreService.update_statut(emprunt.id_exemplaire, "disponible")
+            
+            # 4. Supprimer l'emprunt actif
+            emprunt.delete()
+            
+            return True
+        except Emprunt.DoesNotExist:
+            return False

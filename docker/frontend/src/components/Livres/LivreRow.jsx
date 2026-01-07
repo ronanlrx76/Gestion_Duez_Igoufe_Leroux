@@ -1,65 +1,81 @@
 import { useNavigate } from 'react-router-dom';
 
-export default function LivreRow({ livre, user }) {
+export default function LivreRow({ livre }) {
+  const navigate = useNavigate();  
+  // 1. Adaptation aux noms de champs de ton Serializer Django
+  // Ton Serializer utilise 'id_livre' et non 'id'
+  const idLivre = livre.id_livre; 
   const disponible = livre.nb_disponibles > 0;
-  const navigate = useNavigate();
 
-  const handleEnSavoirPlus = () => {
-    navigate(`/Livres/${livre.id}`);
-  };
-
+  // 2. Récupération de l'utilisateur pour la réservation
   const handleReserver = () => {
-    if (!user) {
-      navigate('/Login');
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    
+    if (!storedUser) {
+      alert("Vous devez être connecté pour réserver un livre.");
+      navigate('/login');
       return;
     }
-    console.log(`Réservation du livre ${livre.titre} par ${user.prenom}`);
+
+    // Ici tu feras plus tard ton fetch POST vers /api/emprunts/
+    navigate(`/reservation/${idLivre}`);
+  };
+
+  const handleEnSavoirPlus = () => {
+    // On utilise bien l'ID de la base de données pour l'URL
+    navigate(`/livres/${idLivre}`);
   };
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 bg-gray-800 border-b border-gray-700">
-      {/* Image */}
+    <div className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 bg-gray-800/50 hover:bg-gray-800 transition-colors border-b border-gray-700 last:border-0">
+      
+      {/* Image : Gestion de l'URL Media de Django */}
       <img
-        src={`/covers/${livre.emplacement_image_couverture}`}
+        src={livre.emplacement_image_couverture || '/covers/default.jpg'}
         alt={livre.titre}
-        className="w-24 h-36 sm:w-16 sm:h-24 object-cover rounded mx-auto sm:mx-0"
+        className="w-20 h-28 sm:w-16 sm:h-24 object-cover rounded shadow-md mx-auto sm:mx-0"
       />
 
       {/* Infos livre */}
       <div className="flex-1 text-center sm:text-left">
-        <h2 className="text-white text-lg font-semibold">{livre.titre}</h2>
-        <p className="text-gray-300">{livre.auteur}</p>
-      </div>
-
-      {/* Disponibilité */}
-      <div className="text-center sm:text-right">
-        <span
-          className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-            disponible ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-          }`}
-        >
-          {disponible ? 'Disponible' : 'Indisponible'}
-        </span>
-        <p className="text-gray-400 text-xs mt-1">
-          {livre.nb_disponibles} / {livre.nb_exemplaires} dispo
+        <h2 className="text-white text-lg font-semibold leading-tight">
+          {livre.titre}
+        </h2>
+        <p className="text-gray-400 text-sm italic">
+          {/* Auteur ID en attendant que ton Serializer renvoie le nom */}
+          Auteur : {livre.nom_auteur} {livre.prenom_auteur}
         </p>
       </div>
 
-      {/* Boutons */}
-      <div className="flex flex-col sm:flex-row gap-2 mt-3 sm:mt-0 sm:ml-4 justify-center sm:justify-end">
+      {/* État de Disponibilité */}
+      <div className="flex flex-col items-center sm:items-end min-w-[120px]">
+        <span
+          className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+            disponible ? 'bg-green-500/20 text-green-400 border border-green-500/50' : 'bg-red-500/20 text-red-400 border border-red-500/50'
+          }`}
+        >
+          {disponible ? 'Disponible' : 'Épuisé'}
+        </span>
+        <p className="text-gray-500 text-xs mt-2 font-medium">
+          {livre.nb_disponibles || 0} sur {livre.nb_exemplaires || 0} en rayon
+        </p>
+      </div>
+
+      {/* Actions */}
+      <div className="flex flex-row sm:flex-col lg:flex-row gap-2 justify-center">
         <button
           onClick={handleEnSavoirPlus}
-          className="cursor-pointer bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition font-medium text-sm"
+          className="flex-1 sm:flex-none bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition text-sm font-semibold"
         >
-          En savoir plus
+          Détails
         </button>
         <button
           onClick={handleReserver}
           disabled={!disponible}
-          className={`px-3 py-1 rounded text-sm font-medium transition ${
+          className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition ${
             disponible
-              ? 'bg-green-600 text-white hover:bg-green-700 cursor-pointer'
-              : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+              ? 'bg-blue-600 text-white hover:bg-blue-500 active:scale-95'
+              : 'bg-gray-800 text-gray-600 cursor-not-allowed border border-gray-700'
           }`}
         >
           Réserver

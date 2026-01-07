@@ -1,67 +1,95 @@
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
-export default function LivreDetail() {
-  const { id } = useParams();
-  const [livre, setLivre] = useState(null);
+const Skeleton = () => (
+  <div className="max-w-4xl mx-auto bg-gray-800 rounded-lg p-6 border border-gray-700 animate-pulse">
+    <div className="flex flex-col md:flex-row gap-8">
+      <div className="w-56 h-80 bg-gray-700 rounded-lg shadow-2xl"></div>
+      <div className="flex-1 space-y-4">
+        <div className="h-10 bg-gray-700 rounded w-3/4"></div>
+        <div className="h-6 bg-gray-700 rounded w-1/4"></div>
+        <div className="grid grid-cols-2 gap-4 mt-6">
+          <div className="h-20 bg-gray-700 rounded-lg"></div>
+          <div className="h-20 bg-gray-700 rounded-lg"></div>
+        </div>
+        <div className="h-32 bg-gray-700 rounded-lg mt-8"></div>
+        <div className="h-12 bg-gray-700 rounded-xl mt-10"></div>
+      </div>
+    </div>
+  </div>
+);
 
-  // Mock de livres
-  const mockLivres = [
-    {
-      id: 1,
-      titre: 'Le Kama-Sutra',
-      auteur: 'Ronan Leroux',
-      nb_disponibles: 3,
-      nb_exemplaires: 5,
-      emplacement_image_couverture: 'kamasutra.jpg',
-      description: 'Un livre pour apprendre la vraie vie pas à pas.'
-    },
-    {
-      id: 2,
-      titre: 'JavaScript Avancé',
-      auteur: 'Jane Smith',
-      nb_disponibles: 0,
-      nb_exemplaires: 2,
-      emplacement_image_couverture: 'livre2.jpeg',
-      description: 'Approfondissement JavaScript pour développeurs.'
-    },
-    {
-      id: 3,
-      titre: 'Python pour tous',
-      auteur: 'Alice Martin',
-      nb_disponibles: 2,
-      nb_exemplaires: 4,
-      emplacement_image_couverture: 'livre3.jpeg',
-      description: 'Apprenez Python facilement avec des exemples concrets.'
-    }
-  ];
+export default function LivreDetail() {
+  const { id } = useParams(); // Récupère l'ID depuis l'URL (ex: /livre/3)
+  const [livre, setLivre] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const found = mockLivres.find((l) => l.id === parseInt(id));
-    setLivre(found);
+    setLoading(true);
+    
+    // On appelle l'API pour récupérer un livre spécifique
+    // Assure-toi que ta route Django accepte les requêtes de ce type
+    fetch(`http://localhost:8000/api/books/${id}/`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.status === "success") {
+          setLivre(res.data);
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Erreur chargement livre:", err);
+        setLoading(false);
+      });
   }, [id]);
-
-  if (!livre) return <p className="text-white text-center mt-10">Livre introuvable</p>;
 
   return (
     <div className="min-h-screen bg-gray-900 text-white py-8 px-4">
-      <div className="max-w-4xl mx-auto bg-gray-800 rounded-lg shadow-lg p-6">
-        <div className="flex flex-col sm:flex-row gap-6">
-          <img
-            src={`/covers/${livre.emplacement_image_couverture}`}
-            alt={livre.titre}
-            className="w-48 h-72 object-cover rounded"
-          />
-          <div className="flex-1">
-            <h1 className="text-3xl font-bold">{livre.titre}</h1>
-            <p className="text-gray-300 mt-2">Auteur : {livre.auteur}</p>
-            <p className="text-gray-300 mt-2">
-              Disponibles : {livre.nb_disponibles} / {livre.nb_exemplaires}
-            </p>
-            <p className="text-gray-300 mt-4">{livre.description}</p>
+      {/* 2. Logique d'affichage */}
+      {loading ? (
+        <Skeleton />
+      ) : livre ? (
+        <div className="max-w-4xl mx-auto bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-700">
+          <div className="flex flex-col md:flex-row gap-8">
+            <div className="flex-shrink-0 mx-auto md:mx-0">
+              <img
+                src={livre.emplacement_image_couverture || '/covers/default.jpg'}
+                alt={livre.titre}
+                className="w-56 h-80 object-cover rounded-lg shadow-2xl border border-gray-600"
+              />
+            </div>
+            <div className="flex-1">
+              <h1 className="text-4xl font-bold text-white">{livre.titre}</h1>
+              <p className="text-blue-400 font-medium text-lg mt-2">Auteur : {livre.nom_auteur} {livre.prenom_auteur}</p>
+              
+              <div className="mt-6 grid grid-cols-2 gap-4">
+                <div className="bg-gray-700 p-4 rounded-lg text-center">
+                  <p className="text-gray-400 text-sm">Disponibles</p>
+                  <p className="text-2xl font-bold text-green-400">{livre.nb_disponibles}</p>
+                </div>
+                <div className="bg-gray-700 p-4 rounded-lg text-center">
+                  <p className="text-gray-400 text-sm">Total</p>
+                  <p className="text-2xl font-bold text-gray-200">{livre.nb_exemplaires}</p>
+                </div>
+              </div>
+
+              <div className="mt-8">
+                <h2 className="text-xl font-semibold border-b border-gray-700 pb-2 text-gray-200">Description</h2>
+                <p className="text-gray-300 mt-4 leading-relaxed">{livre.description || "Aucune description."}</p>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="text-center mt-20">
+          <p className="text-xl text-gray-400">Livre introuvable (ID: {id})</p>
+        </div>
+      )}
     </div>
   );
 }

@@ -5,3 +5,5 @@ from .authorSerializer import AuteurSerializer
 from .livreSerializer import LivreSerializer
 from .exemplaireLivreSerializer import ExemplaireLivreSerializer
 from .empruntSerializer import EmpruntSerializer
+from .historiqueEmpruntSerializer import HistoriqueEmpruntSerializer
+from .customTokenRefreshSerializer import CustomTokenRefreshSerializer

@@ -1,1 +1,2 @@
 from .exemplaireLivreView import ExemplaireLivreView
+from .exemplaireLivreDetailView import ExemplaireLivreDetailView
