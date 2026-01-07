@@ -50,7 +50,7 @@ export default function HomeAdmin() {
                             title="Modifier / Supprimer" 
                             description="Editer les titres, auteurs ou supprimer des ouvrages."
                             icon="✏️"
-                            to="/admin/modifier"
+                            to="/admin/actions"
                             color="bg-blue-600"
                         />
 

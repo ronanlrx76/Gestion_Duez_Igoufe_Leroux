@@ -8,7 +8,9 @@ import LivreDetail from './pages/BookDetail';
 import Header from './components/Header';
 
 import HomeAdmin from './pages/admin/HomeAdmin.jsx';
-import AdminAdd from './pages/admin/ajouterLivreAuteur.jsx';
+import AdminAdd from './pages/admin/ajouterEntite.jsx';
+import ExemplairesManager from './pages/admin/exemplairesManager.jsx';
+import AdminActions from './pages/admin/actionsEntite.jsx';
 
 function App() {
   return (
@@ -25,6 +27,8 @@ function App() {
             <Route path="/informations" element={<Infos />} />
             <Route path="/admin/dashboard" element={<HomeAdmin />} />
             <Route path="/admin/ajouter" element={<AdminAdd />} />
+            <Route path="/admin/exemplaires" element={<ExemplairesManager />} />
+            <Route path="/admin/actions" element={<AdminActions />} />
           </Route>
         </Routes>
       </div>

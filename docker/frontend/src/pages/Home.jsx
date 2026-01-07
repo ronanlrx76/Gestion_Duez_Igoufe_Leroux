@@ -66,7 +66,7 @@ export default function Home() {
             📚 Livres
           </NavLink>
           <NavLink
-            to={username ? "/emprunts" : "/Login"}
+            to={username ? "/emprunts" : "/login"}
             className="bg-gray-700 hover:bg-gray-600 p-6 rounded-lg shadow text-white text-center font-semibold"
           >
             📝 Mes emprunts

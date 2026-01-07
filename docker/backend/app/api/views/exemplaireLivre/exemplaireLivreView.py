@@ -50,7 +50,7 @@ class ExemplaireLivreView(APIView):
         
         data = {
             "total_exemplaires": total,
-            "liste": serializer.data
+            "results": serializer.data
         }
         return Responses.StandardResponse("success", "OK", data, status.HTTP_200_OK)
 

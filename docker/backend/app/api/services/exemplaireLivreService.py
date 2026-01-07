@@ -1,4 +1,5 @@
 from ..models import ExemplaireLivres
+from ..serializers import ExemplaireLivreSerializer
 
 class ExemplaireLivreService:
     @staticmethod
@@ -18,11 +19,19 @@ class ExemplaireLivreService:
     @staticmethod
     def update_exemplaire(id_exemplaire, data):
         try:
+            # 1. Récupérer l'instance existante
             exemplaire = ExemplaireLivres.objects.get(id_exemplaire=id_exemplaire)
-            for key, value in data.items():
-                setattr(exemplaire, key, value)
-            exemplaire.save()
-            return exemplaire
+            
+            # 2. Utiliser le serializer avec partial=True
+            # Cela gère tout seul le problème de la ForeignKey (id_livre)
+            serializer = ExemplaireLivreSerializer(exemplaire, data=data, partial=True)
+            
+            if serializer.is_valid():
+                return serializer.save()
+            else:
+                # Optionnel: print(serializer.errors) pour debugger
+                return None
+            
         except ExemplaireLivres.DoesNotExist:
             return None
         

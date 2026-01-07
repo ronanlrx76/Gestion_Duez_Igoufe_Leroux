@@ -51,3 +51,25 @@ class LivreDetailView(APIView):
         if BookService.delete_livre(id):
             return Responses.StandardResponse("success", "Livre supprimé", http_status=status.HTTP_204_NO_CONTENT)
         raise NotFoundException()
+    
+    @extend_schema(
+        summary="=> Admin | Modifier partiellement un livre",
+        description="Met à jour certains champs d'un livre (titre, auteur, ou image). Réservé aux administrateurs.",
+        request=LivreSerializer,
+        responses={200: LivreSerializer}
+    )
+    def patch(self, request, id=None):
+        if not id:
+            raise AllParametersAreRequiredException("ID du livre requis")
+        
+        # On récupère les données envoyées dans le corps de la requête
+        data = request.data
+        
+        # On appelle le service pour mettre à jour
+        livre_modifie = BookService.update_livre(id, data)
+        
+        if not livre_modifie:
+            raise NotFoundException("Livre non trouvé ou erreur lors de la mise à jour")
+            
+        serializer = LivreSerializer(livre_modifie)
+        return Responses.StandardResponse("success", "Livre mis à jour avec succès", serializer.data)
