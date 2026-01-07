@@ -34,8 +34,6 @@ export default function MesEmprunts() {
         return new Date(dateRetourPrevu) < new Date() && dateRetourPrevu !== null;
     };
 
-    if (loading) return <div className="text-center p-10 text-gray-400">Chargement de vos emprunts...</div>;
-
     return (
         <div className="min-h-screen bg-gray-900 text-white p-6">
             <div className="max-w-4xl mx-auto">
@@ -48,6 +46,14 @@ export default function MesEmprunts() {
                         {error}
                     </div>
                 )}
+
+                {loading ? (
+                /* SKELETON : On affiche des boites vides animées pour éviter le flash */
+                <div className="animate-pulse space-y-4">
+                    <div className="h-24 bg-gray-800 rounded-lg"></div>
+                    <div className="h-24 bg-gray-800 rounded-lg"></div>
+                </div>
+                ) : (
 
                 <div className="grid gap-4">
                     {emprunts.length > 0 ? (
@@ -92,6 +98,7 @@ export default function MesEmprunts() {
                         </div>
                     )}
                 </div>
+                )}
             </div>
         </div>
     );

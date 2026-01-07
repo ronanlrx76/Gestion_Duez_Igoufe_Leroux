@@ -10,26 +10,6 @@ export default function Home() {
   const [livres, setLivres] = useState([]);
 
   useEffect(() => {
-    setLivres([
-      {
-        id: 1,
-        titre: 'Le Kama-Sutra',
-        auteur: 'Ronan Leroux',
-        nb_disponibles: 3,
-        nb_exemplaires: 5,
-        emplacement_image_couverture: 'kamasutra.jpg',
-        description: 'Un livre pour apprendre la vraie vie pas à pas.'
-      },
-      {
-        id: 2,
-        titre: 'JavaScript Avancé',
-        auteur: 'Jane Smith',
-        nb_disponibles: 0,
-        nb_exemplaires: 2,
-        emplacement_image_couverture: 'test2.png',
-      },
-    ]);
-
     // Récupération de l'utilisateur connecté depuis localStorage
     const storedUser = JSON.parse(localStorage.getItem('user'));
     if (storedUser && storedUser.prenom) {
@@ -41,7 +21,7 @@ export default function Home() {
 
   // Notifications dynamiques
   const notifications = username
-    ? ['Vous avez 1 livre à rendre dans 5 jours', 'Nouvel ouvrage ajouté : "Python pour tous"']
+    ? []
     : [];
 
   return (
