@@ -65,7 +65,7 @@ export default function LivreDetail() {
             </div>
             <div className="flex-1">
               <h1 className="text-4xl font-bold text-white">{livre.titre}</h1>
-              <p className="text-blue-400 font-medium text-lg mt-2">Auteur ID: {livre.id_auteur}</p>
+              <p className="text-blue-400 font-medium text-lg mt-2">Auteur : {livre.nom_auteur} {livre.prenom_auteur}</p>
               
               <div className="mt-6 grid grid-cols-2 gap-4">
                 <div className="bg-gray-700 p-4 rounded-lg text-center">

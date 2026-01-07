@@ -16,10 +16,10 @@ class AdminStatsService:
         emprunts_actifs_qs = Emprunt.objects.all()
         retards_qs = Emprunt.objects.filter(retour_prevu__lt=today)
         liste_stock = Livre.objects.annotate(
-            total_exemplaires=Count('exemplairelivres'),
+            total_exemplaires=Count('exemplaires'),
             disponibles=Count(
-                'exemplairelivres', 
-                filter=Q(exemplairelivres__statut='disponible')
+                'exemplaires', 
+                filter=Q(exemplaires__statut__iexact='disponible')
             )
         ).values('id_livre', 'titre', 'total_exemplaires', 'disponibles')
         
@@ -41,7 +41,7 @@ class AdminStatsService:
             },
             "popularite": {
                 "top_5": Livre.objects.annotate(
-                    nb_total=Count('exemplairelivres__historiqueemprunt')
+                    nb_total=Count('exemplaires__historiqueemprunt')
                 ).order_by('-nb_total')[:5].values('titre', 'nb_total')
             }
         }

@@ -5,7 +5,7 @@ from django.db.models import Count, Q
 class BookService:
     @staticmethod
     def get_all_livres(titre=None):
-        query = Livre.objects.all().order_by('id_livre')
+        query = Livre.objects.select_related('id_auteur').all().order_by('id_livre')
         if titre:
             query = query.filter(titre__icontains=titre)
 
@@ -19,7 +19,10 @@ class BookService:
     def get_livre_by_id(id_livre):
         """Récupère un livre par son ID ou retourne None."""
         try:
-            return Livre.objects.get(id_livre=id_livre)
+            return  Livre.objects.select_related('id_auteur').annotate(
+                total_ex=Count('exemplaires'),
+                total_dispo=Count('exemplaires', filter=Q(exemplaires__statut__iexact='disponible'))
+            ).get(id_livre=id_livre)
         except Livre.DoesNotExist:
             return None
 

@@ -18,7 +18,7 @@ export default function LivreRow({ livre }) {
     }
 
     // Ici tu feras plus tard ton fetch POST vers /api/emprunts/
-    console.log(`Demande de réservation pour le livre ID: ${idLivre}`);
+    navigate(`/reservation/${idLivre}`);
   };
 
   const handleEnSavoirPlus = () => {
@@ -43,7 +43,7 @@ export default function LivreRow({ livre }) {
         </h2>
         <p className="text-gray-400 text-sm italic">
           {/* Auteur ID en attendant que ton Serializer renvoie le nom */}
-          Auteur ID: {livre.id_auteur}
+          Auteur : {livre.nom_auteur} {livre.prenom_auteur}
         </p>
       </div>
 

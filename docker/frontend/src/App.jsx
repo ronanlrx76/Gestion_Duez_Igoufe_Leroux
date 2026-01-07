@@ -6,6 +6,8 @@ import Book from './pages/Book';
 import Infos from './pages/Infos';
 import LivreDetail from './pages/BookDetail';
 import Header from './components/Header';
+import MesEmprunts from './pages/emprunt.jsx';
+import Reservation from './pages/reservation.jsx';
 
 import HomeAdmin from './pages/admin/HomeAdmin.jsx';
 import AdminAdd from './pages/admin/ajouterEntite.jsx';
@@ -24,6 +26,8 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/livres" element={<Book />} />
             <Route path="/livres/:id" element={<LivreDetail/>} />
+            <Route path="/mes-emprunts" element={<MesEmprunts />} />
+            <Route path="/reservation/:id_livre" element={<Reservation />} />
             <Route path="/informations" element={<Infos />} />
             <Route path="/admin/dashboard" element={<HomeAdmin />} />
             <Route path="/admin/ajouter" element={<AdminAdd />} />

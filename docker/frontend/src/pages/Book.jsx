@@ -91,7 +91,6 @@ export default function Livres() {
                                     <h2 className="text-white font-semibold text-lg">
                                         {highlightText(livre.titre, search)}
                                     </h2>
-                                    <p className="text-gray-400 text-sm mb-2">Auteur ID: {livre.id_auteur}</p>
                                     <LivreRow livre={livre} />
                                 </div>
                             ))}
