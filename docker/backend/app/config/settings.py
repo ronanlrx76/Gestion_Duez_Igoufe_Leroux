@@ -20,17 +20,24 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'api',
-    'drf_spectacular'
+    'drf_spectacular',
+    'corsheaders'
 ]
 
 # MIDDLEWARE (obligatoire pour contenttypes, auth, sessions, messages)
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+]
+
+# frontend
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
 ]
 
 # Templates (Django en a BESOIN même si tu n'utilises pas l'admin)

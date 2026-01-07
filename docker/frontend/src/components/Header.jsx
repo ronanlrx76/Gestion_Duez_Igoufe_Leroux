@@ -4,8 +4,8 @@ import { NavLink, Outlet, Link  } from 'react-router-dom';
 
 const navigation = [
   { name: 'ACCUEIL', href: '/' },
-  { name: 'LIVRES', href: '/Livres' },
-  { name: 'INFORMATIONS', href: '/Informations' },
+  { name: 'LIVRES', href: '/livres' },
+  { name: 'INFORMATIONS', href: '/informations' },
 ];
 
 export default function Navbar() {
