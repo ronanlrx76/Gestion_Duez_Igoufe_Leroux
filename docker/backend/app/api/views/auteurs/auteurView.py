@@ -26,7 +26,7 @@ class AuteurView(APIView):
     def get(self, request):
         auteurs = AuthorService.get_all_auteurs()
         serializer = AuteurSerializer(auteurs, many=True)
-        return Responses.StandardResponse("succes", "OK", serializer.data, status.HTTP_200_OK)
+        return Responses.StandardResponse("success", "OK", serializer.data, status.HTTP_200_OK)
 
     # POST : Ajouter un auteur
     @extend_schema(
